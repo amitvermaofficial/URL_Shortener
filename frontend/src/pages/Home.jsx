@@ -8,24 +8,27 @@ const Home = () => {
   const [latestShortUrl, setLatestShortUrl] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
   const { register, handleSubmit, watch, reset } = useForm();
-  const longUrl = watch('longUrl', '');
+  const longUrl = watch('full_url', '');
 
-  const createNewURI = async (long_url) => {
-    const {id} = await axios.post('/api/create', long_url);
-    console.log(id)
+  const createNewURI = async (full_url) => {
+    console.log(full_url)
+    const res = await axios.post('/api/create', full_url);
+    console.log("Short Url: ", res.data);
+    console.log(res);
   }
 
   const SubmitHandler = (data) => {
-    // console.log(data.longUrl)
-    const newShortUri = createNewURI(data.longUrl); 
+    const newShortUri = createNewURI(data); 
+    console.log("1", longUrl)
     const newShortUrl = {
       id: Date.now().toString(),
-      longUrl: data.longUrl,
+      longUrl: data.full_url,
       shortUrl: `https://sho.rt/${Math.random().toString(36).substring(2, 8)}`,
       clicks: 0,
     };
     setLatestShortUrl(newShortUrl);
     setUrls((prev) => [newShortUrl, ...prev].slice(0, 10)); 
+    console.log("first");
     reset();
   };
 
@@ -49,7 +52,7 @@ const Home = () => {
           <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-blue-400 border border-blue-100">
             <i className="ri-external-link-line text-xl text-blue-400" />
             <input
-              {...register('longUrl', { required: true })}
+              {...register('full_url', { required: true })}
               type="url"
               placeholder="Paste your long URL here..."
               className="flex-1 bg-transparent outline-none text-lg placeholder-gray-400"
